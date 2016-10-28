@@ -61,8 +61,14 @@ def parser_reviews(index_url):
     business_name = business_name_span.contents[0]
 
 
-    business_id_wrapper = reviews_body.find("div", attrs={"class": "lightbox-map hidden"})
-    business_id = business_id_wrapper['data-business-id']
+    #business_id_wrapper = reviews_body.find("div", attrs={"class": "lightbox-map hidden"})
+    #business_id = business_id_wrapper['data-business-id']
+    temps_wrapper = reviews_body.find_all("div", attrs={"itemprop": "review"})
+    for temp in temps_wrapper:
+        time = temp.find("meta", attrs={"itemprop" : "datePublished"})
+        print time
+
+
     reviews_wrapper = reviews_body.find_all("p", attrs={"itemprop": "description"})
     reviews = []
 
@@ -120,8 +126,8 @@ def parser_menu(index_url, business_id):
 
 if __name__ == "__main__":
     #index_urls.append('http://www.yelp.com/biz/aviva-by-kameel-atlanta')
-	#index_urls.append('http://www.yelp.com/biz/%C3%A9br%C3%ACk-coffee-room-atlanta')
-	#index_urls.append('http://www.yelp.com/biz/jenis-splendid-ice-creams-atlanta')
+    #index_urls.append('http://www.yelp.com/biz/%C3%A9br%C3%ACk-coffee-room-atlanta')
+    #index_urls.append('http://www.yelp.com/biz/jenis-splendid-ice-creams-atlanta')
     
         #TODO: Lei Zhang
         #index_urls = Function get urls
