@@ -16,10 +16,13 @@ def parser_restaurantFeature(index_url):
     response = requests.get(index_url)
     business_soup = bs4.BeautifulSoup(response.text, "html.parser")
     business_body = business_soup.body
-    business_id_wrapper = business_body.find("div", attrs={"class": "lightbox-map hidden"})
-    business_id = business_id_wrapper['data-business-id']
     
-    business_media_wrapper = business_body.find("div", attrs={"class": "media-story"})
+    
+    business_media_wrapper = business_body.find("h1", attrs={"id":"HEADING", "property":"name"})
+    business_name = business_media_wrapper.text
+    print "name is "
+    for temp in business_name:
+        print temp
     business_name_wrapper = business_media_wrapper.find("a")
     business_name_span = business_name_wrapper.contents[0]
     business_name = business_name_span.contents[0]
