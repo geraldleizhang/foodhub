@@ -12,6 +12,8 @@ reviews_data = []
 #menu_data = []
 index_urls = []
 
+
+
 def parser_restaurantFeature(index_url):
     response = requests.get(index_url)
     business_soup = bs4.BeautifulSoup(response.text, "html.parser")
@@ -19,19 +21,16 @@ def parser_restaurantFeature(index_url):
     
     
     business_media_wrapper = business_body.find("h1", attrs={"id":"HEADING", "property":"name"})
-    business_name = business_media_wrapper.text
-    print "name is "
-    for temp in business_name:
-        print temp
-    business_name_wrapper = business_media_wrapper.find("a")
-    business_name_span = business_name_wrapper.contents[0]
-    business_name = business_name_span.contents[0]
-    
-    business_address_wrapper = business_media_wrapper.find("address")
-    business_address = business_address_wrapper.contents[0]
-    business_address = business_address.strip()
+    business_name = business_media_wrapper.text.strip()
+    #print "name is "
+    #print business_name
 
-    menu = parser_menu(index_url, business_id)
+    business_media_wrapper = business_body.find("span", attrs={"class":"format_address"})
+    business_address = business_media_wrapper.text.strip()
+    #print "address is "
+    #print business_address
+
+    menu = parser_menu(index_url)
 
     data = {
             #'business_id' : business_id,
@@ -52,46 +51,69 @@ def parser_brs(brs):
         review_brs = review_brs.br
     return review
 
-    
 def parser_reviews(index_url):
     response = requests.get(index_url)
     reviews_soup = bs4.BeautifulSoup(response.text, "html.parser")
     reviews_body = reviews_soup.body
 
-    business_media_wrapper = reviews_body.find("div", attrs={"class": "media-story"})
-    business_name_wrapper = business_media_wrapper.find("a")
-    business_name_span = business_name_wrapper.contents[0]
-    business_name = business_name_span.contents[0]
+    business_media_wrapper = reviews_body.find("h1", attrs={"id":"HEADING", "property":"name"})
+    business_name = business_media_wrapper.text.strip()
+    #print "name is "
+    #print business_name
 
+    review_urls = []
+    review_urls.append(index_url)
+    for i in range(10,100,10):
+        review_url = index_url.replace("Reviews-", "Reviews-or"+str(i)+"-")
+        review_url = review_url.replace("html", "html#REVIEWS")
+        print review_url.strip()
+        review_urls.append(review_url.strip())
 
     #business_id_wrapper = reviews_body.find("div", attrs={"class": "lightbox-map hidden"})
     #business_id = business_id_wrapper['data-business-id']
-    reviews_wrapper = reviews_body.find_all("div", attrs={"itemprop": "review"})
-    for review_wrapper in reviews_wrapper:
-        #print temp
-        author = review_wrapper.find_all(itemprop="author")
-        #print "author is"
-        #print author[0]['content']
-        time = review_wrapper.find_all(itemprop="datePublished")
-        #print "time is"
-        #print time[0]['content']
-        review = review_wrapper.find_all(itemprop="description")
-        #print "review is"
-        #print review[0].text
+    for item in review_urls:
+        #print item
+        response = requests.get(item)
+        reviews_soup = bs4.BeautifulSoup(response.text, "html.parser")
+        reviews_body = reviews_soup.body
+        reviews_wrapper = reviews_body.find_all("div", attrs={"class": "reviewSelector  "})
+        #print reviews_wrapper
+        for review_wrapper in reviews_wrapper:
+            #print temp
+            author = review_wrapper.find("div", attrs={"class": "username mo"})
+            if author == None:
+                continue
+            #print "author is"
+            #print author.text.strip()
+            time = review_wrapper.find("span", attrs={"class": "ratingDate relativeDate"})
+            #print "time is", time
+            if time != None:
+                time = time['title']
+                #print time
+            else:
+                time = review_wrapper.find("span", attrs={"class": "ratingDate"})
+                time = time.text[9:].strip()
+            #print time
+            review = review_wrapper.find("p", attrs={"class": "partial_entry"})
+            #print "review is"
+            review = review.text.strip()
+            if review[-4:]=="More":
+                review = review[:-10]
+            #print review
 
-        data = {
-            'restaurant' : business_name,
-            'time' : time[0]['content'],
-            'author' : author[0]['content'],
-            'review' : review[0].text
-        }
-        reviews_data.append(data)
+            data = {
+                'restaurant' : business_name,
+                'time' : time,
+                'author' : author.text.strip(),
+                'review' : review
+            }
+            reviews_data.append(data)
     
     return data
 
 
-def parser_menu(index_url, business_id):
-    menu_url = index_url.replace('biz','menu')
+def parser_menu(index_url):
+    menu_url = index_url
     print menu_url
     menu_response = requests.get(menu_url)
     menu_soup = bs4.BeautifulSoup(menu_response.text, "html.parser")
@@ -99,24 +121,12 @@ def parser_menu(index_url, business_id):
         return
     menu_body = menu_soup.body
 
-    menus_wrapper = menu_body.find_all("div", attrs={"class": "menu-item-details"})
+    menus_wrapper = menu_body.find_all("div", attrs={"class": "menuItemTitle"})
     menus = []
 
     for menu_wrapper in menus_wrapper:
-        menu_name = menu_wrapper.find("h4")
-        if menu_name.find("a") is not None:
-            menus.append(menu_name.find("a").string.encode("utf-8"))
-            #data = {
-            #'business_id' : business_id,
-            #'menu' : menu_name.find("a").string
-            #}
-            #menu_data.append(data)
-    
-    #data = {
-    #        'business_id' : business_id,
-    #        'menu' : menus
-    #        }
-    #menu_data.append(data)
+        print menu_wrapper.text
+        menus.append(menu_wrapper.text)
     return menus
 
 
