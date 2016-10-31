@@ -138,7 +138,7 @@ if __name__ == "__main__":
         #TODO: Lei Zhang
         #index_urls = Function get urls
     #urls = open("urls.txt")
-    urls = open("test.txt")
+    urls = open("urls.txt")
     while 1:
         line = urls.readline()
         if not line:

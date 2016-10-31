@@ -16,6 +16,7 @@ index_urls = []
 
 def parser_restaurantFeature(index_url):
     response = requests.get(index_url)
+    print index_url
     business_soup = bs4.BeautifulSoup(response.text, "html.parser")
     business_body = business_soup.body
     
@@ -137,7 +138,7 @@ if __name__ == "__main__":
         #TODO: Lei Zhang
         #index_urls = Function get urls
     #urls = open("urls.txt")
-    urls = open("test.txt")
+    urls = open("urls.txt")
     while 1:
         line = urls.readline()
         if not line:
