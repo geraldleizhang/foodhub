@@ -25,7 +25,11 @@ restaurant.extend(json.load(ytemp))
 #get common dish name keyword list
 dish_key_temp = {}
 dish_key = []
-dish_name = []
+dish_name = {}
+#build dish_key -> dish_name
+dish_key_namelist = {}
+dish_key_related = {}
+dish_name_key = {}
 for item in restaurant:
 	#print item['name']
 	if item['menu'] == []:
@@ -50,48 +54,104 @@ for item in restaurant:
 				dish_key_temp[t] = 1
 				hasdish = 1
 		if hasdish == 1:
-			dish_name.append(i)
+			#dish_name.append(i)
+			if dish_name.has_key(i):
+				dish_name[i].append(item['name'].encode('utf8'))
+			else:
+				dish_name[i]=[]
+				dish_name[i].append(item['name'].encode('utf8'))
 
 
 
-dish_key_temp = sorted(dish_key_temp.items(), lambda x, y: cmp(x[1], y[1]))
+#dish_key_temp = sorted(dish_key_temp.items(), lambda x, y: cmp(x[1], y[1]))
 for item in dish_key_temp:
-	#print item[1]
-	if item[1] > 4 and len(item[0])>2:
-		dish_key.append(item[0]) 
-
-#for item in dish_key:
+	if dish_key_temp[item] > 4 and len(item)>2:
+		dish_key.append(item) 
+		dish_key_namelist[item] = []
+		dish_key_related[item] = {}
+#print "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
+for item in dish_name.keys():
 #	print item
-
-for item in dish_name:
 	sig = 0
+	key_temp = []
+	dish_name_key[item]=[]
 	for key in dish_key:
 		if item.find(key) != -1:
 			sig = 1
-			continue
+			key_temp.append(key)
+			dish_key_namelist[key].append(item)
+			dish_name_key[item].append(key)
+			#continue
 	if sig==0:
 		#print item
-		dish_name.remove(item)
+		dish_name.pop(item)
+		dish_name_key.pop(item)
+		continue
+	for key in key_temp:
+		for t in key_temp:
+			if t != key:
+				if dish_key_related[key].has_key(t) == True:
+					dish_key_related[key][t] += 1
+				else:
+					dish_key_related[key][t] = 1
+				#dish_key_related[key].append(t)
 
+#for item in dish_key:
+#	print item
+#for item in dish_key_namelist:
+#	print item, len(dish_key_namelist[item])
+#for item in dish_key_related:
+#	dish_key_related[item] = sorted(dish_key_related[item].items(), lambda x, y: cmp(x[1], y[1]))
+#	print item, dish_key_related[item]
+num = 0
 for item in dish_name:
-	print item
+	dish_name[item] = list(set(dish_name[item]))
+	#print item, dish_name[item]
+	if len(dish_name[item]) > 1:
+		num += 1
+		print item, dish_name[item], len(dish_name[item])
+print num
+print len(dish_name)
 
 #get useful reviews
+dish_name_reviews = {}
 num=0
-print len(reviews)
+useful_reviews=[]
+#print len(reviews)
 for item in reviews:
-	temp = item['review'].encode('utf8')
+	temp = item['review'].encode('utf8').split(".")
 	signal = 0
 	for dish in dish_name:
-		if temp.find(dish) != -1:
-			if len(dish) > 10:
-				print dish
-			signal = 1
+		for sentence in temp:
+			if sentence.find(dish) != -1:
+				#if len(dish) > 10:
+				#	print dish
+				signal = 1
+				data = {
+					'restaurant' : item['restaurant'],
+                	'time' : item['time'],
+                	'author' : item['author'],
+                	'review' : sentence
+				}
+				if dish_name_reviews.has_key(dish):
+					dish_name_reviews[dish].append(data)
+				else:
+					dish_name_reviews[dish] = []
+					dish_name_reviews[dish].append(data)
 	if signal == 1:
 		num += 1
+		#useful_reviews.append(temp)
 	#print temp
 print num
 
+#for item in useful_reviews:
+#	print item
+num = 0
+for item in dish_name_reviews:
+	if len(dish_name_reviews[item]) > 3:
+		print item,  dish_name_reviews[item], len(dish_name_reviews[item])
+		num += 1
+print num
 
 
 
