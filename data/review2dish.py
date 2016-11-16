@@ -131,7 +131,9 @@ for item in reviews:
 					'restaurant' : item['restaurant'],
                 	'time' : item['time'],
                 	'author' : item['author'],
-                	'review' : sentence
+                	'review' : sentence,
+                	'point' : 0.0,
+                	'keyword' : dish_name_key[dish]      	
 				}
 				if dish_name_reviews.has_key(dish):
 					dish_name_reviews[dish].append(data)
@@ -143,6 +145,9 @@ for item in reviews:
 		#useful_reviews.append(temp)
 	#print temp
 print num
+
+review2dish = open('review2dish.json','w')
+json.dump(dish_name_reviews, review2dish)
 
 #for item in useful_reviews:
 #	print item
