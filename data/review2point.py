@@ -25,30 +25,39 @@ temp = open('review2dish.json','r')
 analysis_temp = open('review2analysis.json','w')
 reviews = json.load(temp)
 results={}
+count = 0
+request_count = 0
 for item in reviews:
 	#print reviews[item][0]['review']
+	restaurant = reviews[item][0]['restaurant']
+	time =  reviews[item][0]['time']
+	author = reviews[item][0]['author']
 	for t in reviews[item][0]['keyword']:
-		#print t.encode('utf8') 
-	#print reviews[item][0]['keyword']
-	#print item, reviews[item][0]['keyword'][0].encode('utf8'), reviews[item][0]['review']
+		#pass
 		response = alchemyapi.sentiment_targeted('text', reviews[item][0]['review'], t.encode('utf8') )
-	#(text=reviews[item][0]['review'], targets=reviews[item][0]['keyword'])
-		print response['status']
-		if response['status'] == 'OK':
+		request_count += 1
+		
+		if response['status'] == 'OK' and response['docSentiment'].has_key('score'):
 			ana_result={
 				'keyword': t.encode('utf8'),
 				'review' : reviews[item][0]['review'],
-				'result' : response['docSentiment']
+				'result' : response['docSentiment'],
+				'restaurant' : restaurant,
+				'time' : time,
+				'author' : author
 			}
 			if results.has_key(item):
 				results[item].append(ana_result)
 			else:
 				results[item] = []
 				results[item].append(ana_result)
-	#result.append(response)
+			#print response['status'], response['docSentiment']['score']
+			count += 1
+			
+	#results.append(response)
 	#break
 json.dump(results, analysis_temp)
-
+print count, request_count
 
 
 #response = alchemyapi.sentiment_targeted('text', demo_text, 'Denver')
