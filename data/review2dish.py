@@ -1,5 +1,6 @@
 import json
 import string
+import time
 
 #loading all data
 otemp = open('ot_reviews.json','r')
@@ -103,6 +104,33 @@ for item in dish_name.keys():
 #for item in dish_key_related:
 #	dish_key_related[item] = sorted(dish_key_related[item].items(), lambda x, y: cmp(x[1], y[1]))
 #	print item, dish_key_related[item]
+
+#key-key-dish
+dish_name_tree = {}
+
+
+for root in dish_key_related:
+	dish_name_tree[root]={}
+	for leaf in dish_key_related[root]:
+		dish_name_tree[root][leaf]=[]
+		for dish in dish_name_key:
+			if dish_name_key[dish].count(root) and dish_name_key[dish].count(leaf):
+				dish_name_tree[root][leaf].append(dish)
+		if dish_name_tree[root][leaf]==[]:
+			dish_name_tree[root].pop(leaf)
+
+for item in dish_name_tree:
+	if dish_name_tree[item]=={}:
+		continue
+	print item, dish_name_tree[item]
+	#for temp in dish_name_tree[item]:
+	#	print dish_name_tree[item][temp] 
+print "done"
+
+time.sleep(100)
+
+
+
 num = 0
 for item in dish_name:
 	dish_name[item] = list(set(dish_name[item]))
@@ -157,6 +185,9 @@ for item in dish_name_reviews:
 		print item,  dish_name_reviews[item], len(dish_name_reviews[item])
 		num += 1
 print num
+
+
+
 
 
 
