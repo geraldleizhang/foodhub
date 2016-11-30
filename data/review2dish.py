@@ -22,6 +22,9 @@ restaurant.extend(json.load(ttemp))
 ytemp = open('ye_restaurant.json','r')
 restaurant.extend(json.load(ytemp))
 
+restaurant_info = open('restaurant_info.json','w')
+json.dump(restaurant, restaurant_info)
+
 
 #get common dish name keyword list
 dish_key_temp = {}
@@ -31,6 +34,8 @@ dish_name = {}
 dish_key_namelist = {}
 dish_key_related = {}
 dish_name_key = {}
+
+
 for item in restaurant:
 	#print item['name']
 	if item['menu'] == []:
@@ -58,6 +63,7 @@ for item in restaurant:
 			#dish_name.append(i)
 			if dish_name.has_key(i):
 				dish_name[i].append(item['name'].encode('utf8'))
+
 			else:
 				dish_name[i]=[]
 				dish_name[i].append(item['name'].encode('utf8'))
@@ -97,6 +103,10 @@ for item in dish_name.keys():
 					dish_key_related[key][t] = 1
 				#dish_key_related[key].append(t)
 
+
+#for item in dish_name:
+#	print item, dish_name[item]
+#time.sleep(100)
 #for item in dish_key:
 #	print item
 #for item in dish_key_namelist:
@@ -119,15 +129,7 @@ for root in dish_key_related:
 		if dish_name_tree[root][leaf]==[]:
 			dish_name_tree[root].pop(leaf)
 
-for item in dish_name_tree:
-	if dish_name_tree[item]=={}:
-		continue
-	print item, dish_name_tree[item]
-	#for temp in dish_name_tree[item]:
-	#	print dish_name_tree[item][temp] 
-print "done"
 
-time.sleep(100)
 
 
 
@@ -140,6 +142,12 @@ for item in dish_name:
 		print item, dish_name[item], len(dish_name[item])
 print num
 print len(dish_name)
+
+
+
+#for item in dish_name:
+#	print item, dish_name[item]
+#time.sleep(100)
 
 #get useful reviews
 dish_name_reviews = {}
@@ -185,6 +193,29 @@ for item in dish_name_reviews:
 		print item,  dish_name_reviews[item], len(dish_name_reviews[item])
 		num += 1
 print num
+
+for item in dish_name_tree:
+	if dish_name_tree[item]=={}:
+		continue
+	print item, dish_name_tree[item]
+	#for temp in dish_name_tree[item]:
+	#	print dish_name_tree[item][temp] 
+print "done"
+
+tempdishname = open('dishname.json','w')
+json.dump(dish_name, tempdishname)
+
+tempdishnametree = open('dishtree.json','w')
+json.dump(dish_name_tree, tempdishnametree)
+print "really done"
+
+
+#for item in dish_name:
+#	print item, dish_name[item]
+
+
+
+#time.sleep(100)
 
 
 
